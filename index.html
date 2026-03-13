@@ -1,12 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Solar Dashboard</title>
+<title>Solar Production Dashboard</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    text-align: center;
+    padding: 40px;
+  }
+  h1 {
+    font-size: 36px;
+  }
+  #power {
+    font-size: 72px;
+    margin: 30px 0 10px;
+  }
+  #updated {
+    font-size: 16px;
+    opacity: 0.7;
+  }
+</style>
 </head>
+<body>
 
-<body style="font-family:Arial;text-align:center;margin-top:80px;">
-<h1>Solar Dashboard</h1>
-<p>If you can see this page, GitHub Pages is working.</p>
+<h1>Solar Energy Production</h1>
+<div id="power">Loading...</div>
+<div id="updated"></div>
+
+<script>
+  const SITE_ID = "2214110";
+  const USER_ID = "4e5451354d544d774d673d3d0a";
+
+  const apiUrl = `https://api.enphaseenergy.com/api/v4/systems/${SITE_ID}/summary?user_id=${USER_ID}`;
+
+  async function fetchData() {
+    try {
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      if (data && data.current_power !== undefined) {
+        document.getElementById("power").textContent = data.current_power + " W";
+        const now = new Date();
+        document.getElementById("updated").textContent = `Last updated: ${now.toLocaleTimeString()}`;
+      } else {
+        document.getElementById("power").textContent = "No data available";
+      }
+    } catch (error) {
+      document.getElementById("power").textContent = "Error loading data";
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  fetchData();
+  setInterval(fetchData, 60000); // Refresh every 60 seconds
+</script>
+
 </body>
-
 </html>
